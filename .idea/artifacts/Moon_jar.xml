@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Moon:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Moon_jar</output-path>
+    <root id="archive" name="Moon.jar">
+      <element id="module-output" name="Moon" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/postgresql-42.2.12.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
