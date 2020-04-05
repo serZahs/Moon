@@ -132,6 +132,114 @@ public class Main {
                     rs.close();
                     st.close();
                     break;
+                case 3:
+                    Scanner scanner2 = new Scanner(System.in);
+                    while (true) {
+                        // create the property and add it to the property relation
+                        System.out.print("> Enter 1 to upload a property, or press q to quit:\n> ");
+                        input = scanner2.nextLine();
+                        if (input.equals("q"))
+                            break;
+                        String query = "insert into property(property_id,street_address,city,province, " +
+                                "property_type,room_type,accommodates,amenities,bathrooms,bedrooms,beds, " +
+                                "host_id,branch_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                        PreparedStatement ps = conn.prepareStatement(query);
+
+                        System.out.print("> Enter the property ID: ");
+                        int propertyId = Integer.parseInt(scanner2.nextLine());
+                        ps.setInt(1,propertyId);
+
+                        System.out.print("> Enter the street address: ");
+                        ps.setString(2,scanner2.nextLine());
+
+                        System.out.print("> Enter the city: ");
+                        ps.setString(3,scanner2.nextLine());
+
+                        System.out.print("> Enter the province (e.g. ON, QC, MB): ");
+                        ps.setString(4,scanner2.nextLine());
+
+                        System.out.print("> Enter the property type: ");
+                        ps.setString(5,scanner2.nextLine());
+
+                        System.out.print("> Enter the room type (entire, shared or private): ");
+                        ps.setString(6,scanner2.nextLine());
+
+                        System.out.print("> Enter the number of bathrooms: ");
+                        ps.setInt(9,Integer.parseInt(scanner2.nextLine()));
+
+                        System.out.print("> Enter the number of bedrooms: ");
+                        ps.setInt(10,Integer.parseInt(scanner2.nextLine()));
+
+                        System.out.print("> The rest of the property information is optional. " +
+                                "Press ENTER to bypass them.\n" +
+                                "> Enter the number of people accommodated: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(7, Types.INTEGER);
+                        else
+                            ps.setInt(7, Integer.parseInt(input));
+
+                        System.out.print("> Describe the amenities: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(8, Types.VARCHAR);
+                        else
+                            ps.setString(8, input);
+
+                        System.out.print("> Describe the beds: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(11, Types.VARCHAR);
+                        else
+                            ps.setString(11, input);
+
+                        System.out.print("> Enter the ID of the host that owns this property: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(12, Types.INTEGER);
+                        else
+                            ps.setInt(12, Integer.parseInt(input));
+
+                        System.out.print("> Enter the ID of the branch that oversees this property: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(13, Types.INTEGER);
+                        else
+                            ps.setInt(13, Integer.parseInt(input));
+
+                        int result = ps.executeUpdate();
+                        System.out.println("> The property was created successfully.");
+                        System.out.println("> The command modified " + result + " rows.");
+                        ps.close();
+
+                        // create the listing for the property and add it to the pricing relation
+                        query = "insert into pricing(property_id, pricing_id, price, num_guests, rules) " +
+                                "values (?,?,?,?,?);";
+                        ps = conn.prepareStatement(query);
+                        ps.setInt(1,propertyId);
+
+                        System.out.print("> You will now create the listing.\n> Enter the listing ID: ");
+                        ps.setInt(2,Integer.parseInt(scanner2.nextLine()));
+
+                        System.out.print("> Enter the price(per day): ");
+                        ps.setDouble(3,Double.parseDouble(scanner2.nextLine()));
+
+                        System.out.print("> Enter the number of guests: ");
+                        ps.setInt(4,Integer.parseInt(scanner2.nextLine()));
+
+                        System.out.print("> (Optional: Press ENTER to bypass) Describe the rules for the property: ");
+                        input = scanner2.nextLine();
+                        if(input.equals(""))
+                            ps.setNull(5, Types.VARCHAR);
+                        else
+                            ps.setString(5, input);
+
+                        result = ps.executeUpdate();
+                        System.out.println("> The listing for the property was uploaded successfully.");
+                        System.out.println("> The command modified " + result + " rows.");
+                        ps.close();
+                    }
+                    break;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
