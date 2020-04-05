@@ -105,28 +105,27 @@ public class Main {
                 case 2:
                     // print the addresses and rates of properties that have listings,
                     // and which dates they're booked if they have been booked
-                    System.out.println("> Current Listings");
+                    String sql = "select street_address, city, province, property_type, room_type, price\n" +
+                            "from property natural join pricing\n" +
+                            "where pricing_id not in(\n" +
+                            "select pricing_id\n" +
+                            "from rentalagreement where end_date >= ? and start_date <= ?);";
+                    PreparedStatement st = conn.prepareStatement(sql);
+                    Scanner scanner3 = new Scanner(System.in);
+                    System.out.print("> Enter a check in date (YYYY-MM-DD): ");
+                    st.setDate(1,Date.valueOf(scanner3.nextLine()));
+                    System.out.print("> Enter a check out date (YYYY-MM-DD): ");
+                    st.setDate(2,Date.valueOf(scanner3.nextLine()));
+                    System.out.println("> Showing available listings");
 
-                    Statement st = conn.createStatement();
-                    ResultSet rs = st.executeQuery("select property_id, street_address, city, province, " +
-                            "property_type, room_type, price from property natural join pricing");
+                    ResultSet rs = st.executeQuery();
                     while (rs.next())
                     {
-                        System.out.print(rs.getString(2) + ", "
-                                + rs.getString(3) + ", " + rs.getString(4) + "\n");
-                        System.out.print(rs.getString(5) + ", "
-                                + rs.getString(6) + " | ");
-                        System.out.println("\uD83D\uDCB0 " + rs.getString(7) + "/day");
-                        Statement st2 = conn.createStatement();
-                        ResultSet rs2 = st2.executeQuery("select property_id, start_date, end_date " +
-                                "from pricing natural join rentalagreement " +
-                                "where property_id = " + rs.getString(1) + ";");
-                        while (rs2.next()) {
-                            System.out.println("\uD83D\uDCC5 " + rs2.getString(2) +
-                                    " to " + rs2.getString(3));
-                        }
-                        rs2.close();
-                        st2.close();
+                        System.out.print("\uD83D\uDCCD " + rs.getString(1) + ", "
+                                + rs.getString(2) + ", " + rs.getString(3) + "\n");
+                        System.out.print("\uD83C\uDFE0 " + rs.getString(4) + ", "
+                                + rs.getString(5) + " | ");
+                        System.out.println("\uD83D\uDCB0 " + rs.getString(6) + "/day");
                         System.out.println("=============================================================");
                     }
                     rs.close();
@@ -239,6 +238,39 @@ public class Main {
                         System.out.println("> The command modified " + result + " rows.");
                         ps.close();
                     }
+                    break;
+                case 4:
+                    // print the addresses and rates of properties that have listings,
+                    // and which dates they're booked if they have been booked
+                    System.out.println("> Showing listings booked two days from now");
+
+                    Statement st2 = conn.createStatement();
+                    ResultSet rs2 = st2.executeQuery("select property_id, street_address, city, province, " +
+                            "property_type, room_type, price from property natural join pricing natural join " +
+                            "rentalagreement where start_date >= now() and start_date <= now() + interval '2' day;");
+                    while (rs2.next())
+                    {
+                        System.out.print("\uD83D\uDCCD " + rs2.getString(2) + ", "
+                                + rs2.getString(3) + ", " + rs2.getString(4) + "\n");
+                        System.out.print("\uD83C\uDFE0 " + rs2.getString(5) + ", "
+                                + rs2.getString(6) + " | ");
+                        System.out.println("\uD83D\uDCB0 " + rs2.getString(7) + "/day");
+
+                        Statement st3 = conn.createStatement();
+                        ResultSet rs3 = st3.executeQuery("select property_id, start_date, end_date\n" +
+                                "from property natural join pricing natural join rentalagreement\n" +
+                                "where property_id = " + rs2.getString(1) + " and start_date >= now() " +
+                                "and start_date <= now() + interval '2' day;");
+                        while (rs3.next()) {
+                            System.out.println("\uD83D\uDCC5 " + rs3.getString(2) +
+                                    " to " + rs3.getString(3));
+                        }
+                        rs3.close();
+                        st3.close();
+                        System.out.println("=============================================================");
+                    }
+                    rs2.close();
+                    st2.close();
                     break;
             }
         } catch (SQLException e) {
