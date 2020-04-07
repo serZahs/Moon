@@ -240,14 +240,19 @@ public class Main {
                     }
                     break;
                 case 4:
+                    Scanner scanner4 = new Scanner(System.in);
+                    System.out.print("> Enter the branch ID: ");
+                    String branchID =  scanner4.nextLine();
+
                     // print the addresses and rates of properties that have listings,
                     // and which dates they're booked if they have been booked
-                    System.out.println("> Showing listings booked two days from now");
+                    System.out.println("> Showing properties booked two days from now");
 
                     Statement st2 = conn.createStatement();
                     ResultSet rs2 = st2.executeQuery("select property_id, street_address, city, province, " +
                             "property_type, room_type, price from property natural join pricing natural join " +
-                            "rentalagreement where start_date >= now() and start_date <= now() + interval '2' day;");
+                            "rentalagreement where branch_id = " + branchID + " and start_date >= current_date and " +
+                            "start_date <= current_date + interval '2' day;");
                     while (rs2.next())
                     {
                         System.out.print("\uD83D\uDCCD " + rs2.getString(2) + ", "
@@ -259,8 +264,8 @@ public class Main {
                         Statement st3 = conn.createStatement();
                         ResultSet rs3 = st3.executeQuery("select property_id, start_date, end_date\n" +
                                 "from property natural join pricing natural join rentalagreement\n" +
-                                "where property_id = " + rs2.getString(1) + " and start_date >= now() " +
-                                "and start_date <= now() + interval '2' day;");
+                                "where property_id = " + rs2.getString(1) + " and start_date >= current_date " +
+                                "and start_date <= current_date + interval '2' day;");
                         while (rs3.next()) {
                             System.out.println("\uD83D\uDCC5 " + rs3.getString(2) +
                                     " to " + rs3.getString(3));
