@@ -148,6 +148,12 @@ public class Main {
                         int propertyId = Integer.parseInt(scanner2.nextLine());
                         ps.setInt(1,propertyId);
 
+                        System.out.print("> Enter the ID of the host that owns this property: ");
+                        ps.setInt(12,Integer.parseInt(scanner2.nextLine()));
+
+                        System.out.print("> Enter the ID of the branch that oversees this property: ");
+                        ps.setInt(13,Integer.parseInt(scanner2.nextLine()));
+
                         System.out.print("> Enter the street address: ");
                         ps.setString(2,scanner2.nextLine());
 
@@ -191,20 +197,6 @@ public class Main {
                             ps.setNull(11, Types.VARCHAR);
                         else
                             ps.setString(11, input);
-
-                        System.out.print("> Enter the ID of the host that owns this property: ");
-                        input = scanner2.nextLine();
-                        if(input.equals(""))
-                            ps.setNull(12, Types.INTEGER);
-                        else
-                            ps.setInt(12, Integer.parseInt(input));
-
-                        System.out.print("> Enter the ID of the branch that oversees this property: ");
-                        input = scanner2.nextLine();
-                        if(input.equals(""))
-                            ps.setNull(13, Types.INTEGER);
-                        else
-                            ps.setInt(13, Integer.parseInt(input));
 
                         int result = ps.executeUpdate();
                         System.out.println("> The property was created successfully.");
